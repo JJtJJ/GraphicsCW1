@@ -30,17 +30,17 @@ def ProcessPixel(pfms, x, y):
 	w_sum = 0
 	for idx,img in enumerate(pfms):
 		pxl = img[y][x]
-		if pxl.sum() == 3.0 or pxl.sum() == 0.0:
-			break
-		pxl = pxl / pow(4,idx)
+		if (pxl.sum() == 3.0 and idx != 0) or (pxl.sum() == 0.0 and idx != len(pfms)):
+			continue
+		pxl = pxl / pow(4,idx) # TODO: Fix when pxl contains a 1.0
 		log_func = np.vectorize(math.log)
 		pxl = log_func(pxl)
 		w = GetWeighting(img[y][x])
 		pxl_sum += pxl * w
 		w_sum += w
 
-	exp_func = np.vectorize(math.exp)
-	return exp_func(pxl_sum / w_sum)
+	exp_func = np.vectorize(lambda x, y: math.exp(x / y) if y != 0 else math.exp(x))
+	return exp_func(pxl_sum, w_sum)
 
 
 

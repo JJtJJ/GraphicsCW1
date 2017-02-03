@@ -21,7 +21,7 @@ def LoadAllPFMs(in_path, in_name, num):
 	return imgs
 
 def GetWeighting(val):
-	w_func = np.vectorize(lambda x: min(x, 1 - x)) # TODO: linear hat-weighting
+	w_func = np.vectorize(lambda x: min(x, 1 - x) if (0.005 < x < 0.92) else 0) # TODO: linear hat-weighting
 	return w_func(val)
 
 
@@ -29,20 +29,27 @@ def ProcessPixel(pfms, x, y):
 	pxl_sum = 0
 	w_sum = 0
 	for idx,img in enumerate(pfms):
+		w = GetWeighting(img[y][x])
+		w_sum += w
 		pxl = img[y][x]
-		if (pxl.sum() == 3.0 and idx != 0) or (pxl.sum() == 0.0 and idx != len(pfms)):
-			continue
 		pxl = pxl / pow(4,idx) # TODO: Fix when pxl contains a 1.0
 		log_func = np.vectorize(math.log)
 		pxl = log_func(pxl)
-		w = GetWeighting(img[y][x])
 		pxl_sum += pxl * w
-		w_sum += w
 
 	exp_func = np.vectorize(lambda x, y: math.exp(x / y) if y != 0 else math.exp(x))
 	return exp_func(pxl_sum, w_sum)
 
+def Test():
+	rect = (300, 400, 400, 500)
+	pfms = LoadAllPFMs("../Memorial", "memorial", 7)
+	img_out = np.empty(shape=pfms[0].shape, dtype=pfms[0].dtype)
 
+	for y in range(rect[1], rect[3]):
+		for x in range(rect[0], rect[2]):
+			img_out[y,x,:] = ProcessPixel(pfms, x, y)
+
+	writePFM("smalltest.pfm", img_out)
 
 if '__main__' == __name__:
 	# LoadAndSavePFM("../Memorial/memorial4.pfm", "test.pfm")
@@ -55,4 +62,3 @@ if '__main__' == __name__:
 			img_out[y,x,:] = ProcessPixel(pfms, x, y)
 	
 	writePFM("test.pfm", img_out)
-	pass

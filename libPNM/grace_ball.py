@@ -1,4 +1,4 @@
-import sys, math
+import sys
 import numpy as np
 from PNM import *
 
@@ -6,10 +6,9 @@ def LoadPFMAndSavePPM(in_path, out_path):
     img_in = loadPFM(in_path)
     img_out = np.empty(shape=img_in.shape, dtype=np.float32)
     height,width,_ = img_in.shape
-    minfunc = np.vectorize(lambda x: min(x, 1.0))
     for y in range(height):
         for x in range(width):
-            img_out[y,x,:] = minfunc(img_in[y,x,:]) * 255.0
+            img_out[y,x,:] = img_in[y,x,:] * 255.0
 
     writePPM(out_path, img_out.astype(np.uint8))
 
@@ -50,8 +49,6 @@ def getNormal(x,y, radius):
 def getReflection(x,y, radius):
     n = getNormal(x,y, radius)
     v = (0,0,1)
-    # NminusV = tuple(np.subtract(n,v))
-    # r = tuple(2*j for j in tuple([np.dot(n, v)*i for i in NminusV]))
     r = tuple(np.subtract(np.multiply(2, np.multiply(np.dot(n,v),n)),v))
     return r
 
@@ -109,10 +106,14 @@ def latLongToSphere(latlongImg, SphereImg):
                 (xx,yy,zz) = getReflection(x, y, radius)
                 # print (x,y)
                 #print (xx,yy,zz)
-                llX = (xx + 1) * (latlong.shape[0]/2.0)
-                llY = (yy + 1) * (latlong.shape[1]/2.0)
+                llX = (xx) * (255)
+                llY = (yy) * (255)
                 llZ = (zz) * (255)
-                # (lat, long) = tolatlong(xx, yy, zz, radius)
+                (lat, long) = tolatlong(xx, yy, zz, radius)
+		
+		height,width,_ = latlong.shape
+		lat_coord = (lat / np.pi) * height 
+		long_coord = ((-long / (2 * np.pi)) + 0.5) * width
                 #print (lat,long)
                 reX = x + radius
                 reY = y + radius
@@ -120,22 +121,22 @@ def latLongToSphere(latlongImg, SphereImg):
                 reY = int(reY)
 
                 # I think the lat 0, long 0 should be the middle of the image...
+
+                # I think the lat 0, long 0 should be the middle of the image...
                 # height, width, _ = latlong.shape
                 # lat_coord = (lat + (width / 2)) % width
                 # long_coord = (long + (height / 2)) % height
 
                 #SphereImg[reX,reY] = latlong[lat,long]
-                SphereImg[reX,reY] = latlong[llX, llY]
+                SphereImg[reX,reY] = latlong[lat_coord, long_coord]
 
 def tolatlong(x,y,z,radius):
-    phi = np.arctan(np.sqrt(x**2+y**2)/z)
+    r = np.sqrt(x**2 + y**2 + z**2)
     # print theta
     theta = np.arctan(y/x)
-    lat = np.rad2deg(theta)
-    long = np.rad2deg(phi)
-    lat = int(lat)
-    long = int(long)
-    return (lat,long)
+    phi = np.arccos(z/r)
+   
+    return (theta,phi)
 
 
 # img = loadPFM('../GraceCathedral/grace_ball.pfm')

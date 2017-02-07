@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import sys, getopt, math
 import numpy as np
 from PNM import *
@@ -80,9 +79,11 @@ def CreateLinearPPM(pfm_path, stops):
 
 def ApplyGamma(in_path, gamma):
 	img_in = loadPPM(in_path)
+	img_no_scaling = img_in / 255.0
 	gamma_func = np.vectorize(lambda x: pow(x, 1.0 / gamma))
-	img_out = gamma_func(img_in)
-	writePPM("g.ppm", img_out.astype(np.uint8))
+	img_out = gamma_func(img_no_scaling)
+	img_scaled = img_out * 255.0
+	writePPM("g.ppm", img_scaled.astype(np.uint8))
 
 if '__main__' == __name__:
 	try:

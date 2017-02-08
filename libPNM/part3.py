@@ -36,7 +36,7 @@ def getSpherePixel(lat, long):
 
     # y = np.sin(phi) * np.cos(theta)
     # x = np.sin(phi) * np.sin(theta)
-    x = 255 * np.sin(phi) * np.sin(theta) / 2
+    x = 255 * np.sin(phi) * np.sin(theta)
     y = 255 * np.cos(theta)
     radius = 510/float(2)
     return (int(x + radius), int(y + radius))

@@ -64,7 +64,7 @@ def ProcessPFMs():
 			sys.stdout.write("\r" + `p` + "%")
 			i += 1
 	
-	out_path = "f.pfm"
+	out_path = "../Memorial/f.pfm"
 	writePFM(out_path, img_out)
 	sys.stdout.write("\n")
 	return out_path
@@ -73,7 +73,7 @@ def CreateLinearPPM(pfm_path, stops):
 	img_pfm = loadPFM(pfm_path)
 	scale_func = np.vectorize(lambda x: min(x * pow(2, stops), 1.0) * 255)
 	img_out = scale_func(img_pfm)
-	out_path = "n.ppm"
+	out_path = "../Memorial/n.ppm"
 	writePPM(out_path, img_out.astype(np.uint8))
 	return out_path
 
@@ -83,7 +83,7 @@ def ApplyGamma(in_path, gamma):
 	gamma_func = np.vectorize(lambda x: pow(x, 1.0 / gamma))
 	img_out = gamma_func(img_no_scaling)
 	img_scaled = img_out * 255.0
-	writePPM("g.ppm", img_scaled.astype(np.uint8))
+	writePPM("../Memorial/g.ppm", img_scaled.astype(np.uint8))
 
 if '__main__' == __name__:
 	try:
@@ -92,7 +92,7 @@ if '__main__' == __name__:
 		print 'part1.py (-r) -s <stops> -g <gamma>'
 		sys.exit(2)
 	
-	pfm_path = "f.pfm"
+	pfm_path = "../Memorial/f.pfm"
 	stops = 0
 	gamma = 2.2
 	for opt, arg in opts:

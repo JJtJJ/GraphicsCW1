@@ -6,9 +6,10 @@ def LoadPFMAndSavePPM(in_path, out_path):
     img_in = loadPFM(in_path)
     img_out = np.empty(shape=img_in.shape, dtype=np.float32)
     height,width,_ = img_in.shape
+    clamp_func = np.vectorize(lambda x: min(x, 1.0))
     for y in range(height):
         for x in range(width):
-            img_out[y,x,:] = img_in[y,x,:] * 255.0
+            img_out[y,x,:] = clamp_func(img_in[y,x,:]) * 255.0
 
     writePPM(out_path, img_out.astype(np.uint8))
 
@@ -118,6 +119,13 @@ def latLongToSphere(latlongImg, SphereImg):
                 reY = int(reY)
 
                 SphereImg[reY,reX] = latlong[long_coord, lat_coord]
+            else:
+                reX = x + radius
+                reY = y + radius
+                reX = int(reX)
+                reY = int(reY)
+                SphereImg[reY,reX] = 0.0
+
 
 def tolatlong(x,y,z):
     phi = np.arctan2(x, z)
@@ -127,7 +135,6 @@ def tolatlong(x,y,z):
     long = theta / (np.pi)
 
     return (lat, long)
-
 
 # img = loadPFM('../GraceCathedral/grace_ball.pfm')
 # mask = getDiskMask(img)
@@ -151,4 +158,4 @@ if '__main__' == __name__:
     img = loadPFM('../GraceCathedral/grace_ball.pfm')
     latLongToSphere('../GraceCathedral/grace_latlong.pfm', img)
     writePFM('../GraceCathedral/grace_ball.pfm', img)
-    LoadPFMAndSavePPM('../GraceCathedral/grace_ball.pfm','../GraceCathedral/grace_ball.ppm')
+    LoadPFMAndSavePPM('../GraceCathedral/grace_ball.pfm', '../GraceCathedral/grace_ball.ppm')

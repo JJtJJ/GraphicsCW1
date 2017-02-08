@@ -56,7 +56,7 @@ def ProcessPFMs():
 
 	height,width,_ = pfms[0].shape
 	maxval = height * width
-	i = 0
+	i = 1
 	for y in range(height):
 		for x in range(width):
 			img_out[y,x,:] = ProcessPixel(pfms, x, y)

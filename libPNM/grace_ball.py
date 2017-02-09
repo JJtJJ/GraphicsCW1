@@ -99,9 +99,9 @@ def drawR(img):
 def latLongToSphere(latlongImg, SphereImg):
     latlong = loadPFM(latlongImg)
     radius = 511/float(2)
-    for x in range(511):
+    for x in range(512):
         x -= radius
-        for y in range(511):
+        for y in range(512):
             y -= radius
             if x**2+y**2 <= radius**2:
                 (xx,yy,zz) = getReflection(x, y, radius)

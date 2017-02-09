@@ -36,10 +36,17 @@ def getSpherePixel(lat, long):
 
     # y = np.sin(phi) * np.cos(theta)
     # x = np.sin(phi) * np.sin(theta)
-    x = 255 * np.sin(phi) * np.sin(theta)
-    y = 255 * np.cos(theta)
+    x = np.sin(phi) * np.sin(theta)
+    y = np.cos(theta)
+    z = np.sin(theta) * np.cos(phi)
+
+    nx,ny,nz = np.add((x, y, z), (0, 0, 1))
+    mag = np.linalg.norm((nx, ny, nz))
+    (nx, ny, nz) = (nx / mag, ny / mag, nz / mag)
+
+
     radius = 510/float(2)
-    return (int(x + radius), int(y + radius))
+    return (int((nx * 255) + radius), int((ny * 255) + radius))
 
 def getLatlong(x, y, width, height):
     lat = ((float(x) / width) - 0.5)
